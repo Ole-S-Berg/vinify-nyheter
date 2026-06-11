@@ -22,6 +22,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Lag minimal config
+        run: |
+          echo '{"api_nokkel":"placeholder","systembolaget_api_nokkel":"","rapport":{"antall_dager_tilbake":30,"tittel":"Vinmonopolet & Systembolaget Nyheter"},"filtre":{"ekskluder_navn":[]}}' > vinmonopolet_config.json
+
       - name: Generer rapport
         run: |
           python vinmonopolet_nyheter.py \
