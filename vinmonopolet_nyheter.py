@@ -425,7 +425,7 @@ def hent_sb_kommende(api_nokkel: str, maks_dager: int = 90) -> list:
             "page": page,
             "size": size,
             "sortBy": "productLaunchDate",
-            "sortDirection": "Ascending",
+            "sortDirection": "Descending",
         }
         url = f"{SB_BASE_URL}/sb-api-ecommerce/v1/productsearch/search?{urllib.parse.urlencode(params)}"
         req = urllib.request.Request(url, headers={
@@ -459,11 +459,10 @@ def hent_sb_kommende(api_nokkel: str, maks_dager: int = 90) -> list:
                 launch = datetime.date.fromisoformat(launch_str)
             except ValueError:
                 continue
-            if launch <= i_dag:
-                continue   # allerede lansert
             if launch > frist:
-                gone_past_window = True
-                break
+                continue   # for langt frem i tid
+            if launch <= i_dag:
+                return alle  # forbi i dag – stopp paginering
             alle.append(p)
 
         print(f"    {len(alle)} kommende produkter (Systembolaget)...")
