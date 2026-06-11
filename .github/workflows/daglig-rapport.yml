@@ -1,0 +1,38 @@
+name: Daglig vinrapport
+
+on:
+  schedule:
+    # Kjører kl. 07:00 UTC (09:00 norsk sommertid) hver dag
+    - cron: "0 7 * * *"
+  workflow_dispatch:  # Kan trigges manuelt fra GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  bygg-rapport:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v4
+
+      - name: Sett opp Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generer rapport
+        run: |
+          python vinmonopolet_nyheter.py \
+            --vm-key "${{ secrets.VM_API_KEY }}" \
+            --dager 30 \
+            --output docs/index.html
+
+      - name: Commit og push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git diff --cached --quiet || git commit -m "Rapport $(date +%Y-%m-%d)"
+          git push

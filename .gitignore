@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+rapporter/
+vinmonopolet_config.json
+*.command
+*.plist
